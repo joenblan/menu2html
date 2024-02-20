@@ -1,0 +1,32 @@
+name: Daily RSS Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight every day
+  workflow_dispatch: # Manual trigger option
+
+jobs:
+  update_rss:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update package lists
+        run: sudo apt-get update
+      - name: Install Dutch locale
+        run: sudo apt-get install -y language-pack-nl
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run script
+        run: python menu2rss.py
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add menu_feed.xml
+          git commit -m "Update RSS feed"
+          git push
