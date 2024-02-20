@@ -7,11 +7,11 @@ body {
 
 h1 {
   color: #7C462A; /* Heading color */
-  font-size: calc(10px + 4vw); /* Base size + 4% of the viewport width */
+  font-size: min(10vw, 60px); /* 10% of the viewport width or maximum of 60px */
 }
 
 h2 {
-  font-size: calc(10px + 2vw); /* Base size + 2% of the viewport width */
+  font-size: min(5vw, 30px); /* 5% of the viewport width or maximum of 30px */
 }
 
 ul {
@@ -21,14 +21,4 @@ ul {
 
 li {
   margin-bottom: 10px; /* Fixed margin for list items */
-}
-
-@media screen and (max-width: 1080px) {
-  h1 {
-    font-size: 5vw; /* Decrease font size for smaller screens */
-  }
-  
-  h2 {
-    font-size: 3vw; /* Decrease font size for smaller screens */
-  }
 }
