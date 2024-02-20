@@ -7,6 +7,11 @@ body {
 
 h1 {
   color: #7C462A; /* Heading color */
+  font-size: calc(8vw + 8vh); /* Dynamic font size based on viewport width and height */
+}
+
+h2 {
+  font-size: calc(4vw + 4vh); /* Dynamic font size based on viewport width and height */
 }
 
 ul {
@@ -15,5 +20,16 @@ ul {
 }
 
 li {
-  margin-bottom: 10px; /* Add space between list items */
+  margin-bottom: 2vh; /* Dynamic margin based on viewport height */
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 600px) {
+  h1 {
+    font-size: 5vw; /* Adjust font size for smaller screens */
+  }
+  
+  h2 {
+    font-size: 3vw; /* Adjust font size for smaller screens */
+  }
 }
