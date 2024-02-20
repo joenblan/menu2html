@@ -8,10 +8,11 @@ body {
 h1 {
   color: #7C462A; /* Heading color */
   font-size: min(10vw, 60px); /* 10% of the viewport width or maximum of 60px */
+  margin-bottom: 20px; /* Adjust margin for h1 */
 }
 
 h2 {
-  font-size: min(5vw, 30px); /* 5% of the viewport width or maximum of 30px */
+  font-size: min(4vw, 20px); /* 4% of the viewport width or maximum of 20px */
 }
 
 ul {
