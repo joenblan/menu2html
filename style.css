@@ -7,11 +7,11 @@ body {
 
 h1 {
   color: #7C462A; /* Heading color */
-  font-size: calc(8vw + 8vh); /* Dynamic font size based on viewport width and height */
+  font-size: calc(10px + 4vw); /* Base size + 4% of the viewport width */
 }
 
 h2 {
-  font-size: calc(4vw + 4vh); /* Dynamic font size based on viewport width and height */
+  font-size: calc(10px + 2vw); /* Base size + 2% of the viewport width */
 }
 
 ul {
@@ -20,16 +20,15 @@ ul {
 }
 
 li {
-  margin-bottom: 2vh; /* Dynamic margin based on viewport height */
+  margin-bottom: 10px; /* Fixed margin for list items */
 }
 
-/* Media query for smaller screens */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1080px) {
   h1 {
-    font-size: 5vw; /* Adjust font size for smaller screens */
+    font-size: 5vw; /* Decrease font size for smaller screens */
   }
   
   h2 {
-    font-size: 3vw; /* Adjust font size for smaller screens */
+    font-size: 3vw; /* Decrease font size for smaller screens */
   }
 }
