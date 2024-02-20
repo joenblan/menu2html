@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import locale
-from feedgen.feed import FeedGenerator
 
 # Set the locale to Dutch
 locale.setlocale(locale.LC_TIME, 'nl_NL.UTF-8')
@@ -25,11 +24,8 @@ if response.status_code == 200:
     # Parse the HTML content of the page
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    # Create RSS feed
-    fg = FeedGenerator()
-    fg.title('Weekmenu')
-    fg.link(href=url, rel='alternate')
-    fg.description('Weekmenu De Parkschool Melle')
+    # Create HTML content
+    html_content = "<!DOCTYPE html><html><head><title>Menu for the week</title></head><body>"
 
     # Get current date
     current_date_obj = datetime.now()
@@ -48,26 +44,26 @@ if response.status_code == 200:
                     current_day_items_menu = day_header.find_next("div", class_="day__content--menu").find_all("div", class_="day__content--item")
                     current_day_items_soup = day_header.find_next("div", class_="day__content--soup").find_all("div", class_="day__content--item")
 
-                    # Add items to RSS feed
-                    fe = fg.add_entry()
-                    fe.title(next_date.strftime("%A, %d %B %Y"))
-                    fe.link(href=url)
-                    description = ""
+                    # Add date as heading
+                    html_content += f"<h1>{next_date.strftime('%A, %d %B %Y')}</h1>"
+
+                    # Add menu items
+                    html_content += "<ul>"
                     for item in current_day_items_soup:
-                        description += item.text + "\n"
+                        html_content += f"<li><h2>{item.text}</h2></li>"
                     for item in current_day_items_menu:
-                        description += item.text + "\n"
-                    fe.description(description)
+                        html_content += f"<li><h2>{item.text}</h2></li>"
+                    html_content += "</ul>"
 
                     break
 
-    # Generate the RSS feed
-    rss_feed = fg.rss_str(pretty=True)
-    
-    # Save the RSS output to a file
-    with open("menu_feed.xml", "w", encoding="utf-8") as file:
-        file.write(rss_feed.decode('utf-8'))
+    # Close HTML content
+    html_content += "</body></html>"
+
+    # Save the HTML output to a file
+    with open("index.html", "w", encoding="utf-8") as file:
+        file.write(html_content)
         
-    print("RSS feed saved as menu_feed.xml")
+    print("HTML file saved as menu.html")
 else:
     print("/")
