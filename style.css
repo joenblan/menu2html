@@ -1,0 +1,19 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #FEFEFE; /* Background color of the school */
+  color: #147A3B; /* Text color */
+  text-align: center; /* Center align all text */
+}
+
+h1 {
+  color: #7C462A; /* Heading color */
+}
+
+ul {
+  list-style-type: none; /* Remove bullet points */
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px; /* Add space between list items */
+}
