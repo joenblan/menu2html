@@ -7,12 +7,12 @@ body {
 
 h1 {
   color: #7C462A; /* Heading color */
-  font-size: min(10vh); /* 10% of the viewport width or maximum of 60px */
-  margin-bottom: 1Opx; /* Adjust margin for h1 */
+  font-size: calc(20vh / 5); /* 20% of the viewport height divided by 5 */
+  margin-bottom: 1vh; /* Adjust margin for h1 */
 }
 
 h2 {
-  font-size: min(4vh); /* 4% of the viewport width or maximum of 20px */
+  font-size: calc(12vh / 30); /* 12% of the viewport height divided by 30 */
 }
 
 ul {
@@ -21,5 +21,5 @@ ul {
 }
 
 li {
-  margin-bottom: 5px; /* Fixed margin for list items */
+  margin-bottom: 0.5vh; /* Adjust margin for list items */
 }
