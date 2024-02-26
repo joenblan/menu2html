@@ -12,7 +12,7 @@ h1 {
 }
 
 h2 {
-  font-size: calc(75vh / 30); /* Remaining 85% of the viewport height divided by 30 */
+  font-size: calc(60vh / 30); /* Remaining 85% of the viewport height divided by 30 */
 }
 
 ul {
