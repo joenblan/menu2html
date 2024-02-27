@@ -57,6 +57,20 @@ if response.status_code == 200:
 
                     break
 
+    # Include the JavaScript code for adjusting font sizes based on the counts
+    html_content += '''
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var h1Count = document.querySelectorAll("h1").length;
+        var h2Count = document.querySelectorAll("h2").length;
+        var adjustedH1FontSize = Math.min(100, 100 * (1 / h1Count)) + "vh";
+        var adjustedH2FontSize = Math.min(100, 100 * (1 / h2Count)) + "vh";
+        document.documentElement.style.setProperty("--base-h1-font-size", adjustedH1FontSize);
+        document.documentElement.style.setProperty("--base-h2-font-size", adjustedH2FontSize);
+      });
+    </script>
+    '''
+
     # Close HTML content
     html_content += "</body></html>"
 
@@ -64,6 +78,6 @@ if response.status_code == 200:
     with open("index.html", "w", encoding="utf-8") as file:
         file.write(html_content)
         
-    print("HTML file saved as menu.html")
+    print("HTML file saved as index.html")
 else:
     print("/")
