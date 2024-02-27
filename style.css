@@ -12,12 +12,10 @@ body {
 
 h1 {
   color: #7C462A; /* Heading color */
-  font-size: calc(15vh / 5); /* 15% of the viewport height divided by 5 */
   margin-bottom: 1vh; /* Adjust margin for h1 */
 }
 
 h2 {
-  font-size: calc(60vh / 30); /* Remaining 85% of the viewport height divided by 30 */
 }
 
 ul {
