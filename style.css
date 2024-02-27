@@ -1,3 +1,8 @@
+:root {
+  --base-h1-font-size: 15vh;
+  --base-h2-font-size: 4vh;
+}
+
 body {
   font-family: Arial, sans-serif;
   background-color: #FEFEFE; /* Background color of the school */
