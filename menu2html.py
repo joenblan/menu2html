@@ -31,7 +31,7 @@ if response.status_code == 200:
     current_date_obj = datetime.now()
 
     # Iterate over the next 5 dates
-    for i in range(5):
+    for i in range(7):
         next_date = current_date_obj + timedelta(days=i)
         if is_valid_day(next_date):
             # Find the day__content--items for the current day
