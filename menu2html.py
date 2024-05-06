@@ -35,19 +35,21 @@ if response.status_code == 200:
         
         # Check if the date is a valid day
         if is_valid_day(header_date):
-            current_day_items_menu = day_header.find_next("div", class_="day__content--menu").find_all("div", class_="day__content--item")
-            current_day_items_soup = day_header.find_next("div", class_="day__content--soup").find_all("div", class_="day__content--item")
+            # Check if the date is within the next 5 days
+            if current_date_obj <= header_date <= current_date_obj + timedelta(days=4):
+                current_day_items_menu = day_header.find_next("div", class_="day__content--menu").find_all("div", class_="day__content--item")
+                current_day_items_soup = day_header.find_next("div", class_="day__content--soup").find_all("div", class_="day__content--item")
 
-            # Add date as heading
-            html_content += f"<h1>{header_date.strftime('%A, %d %B %Y')}</h1>"
+                # Add date as heading
+                html_content += f"<h1>{header_date.strftime('%A, %d %B %Y')}</h1>"
 
-            # Add menu items
-            html_content += "<ul>"
-            for item in current_day_items_soup:
-                html_content += f"<li><h2>{item.text}</h2></li>"
-            for item in current_day_items_menu:
-                html_content += f"<li><h2>{item.text}</h2></li>"
-            html_content += "</ul>"
+                # Add menu items
+                html_content += "<ul>"
+                for item in current_day_items_soup:
+                    html_content += f"<li><h2>{item.text}</h2></li>"
+                for item in current_day_items_menu:
+                    html_content += f"<li><h2>{item.text}</h2></li>"
+                html_content += "</ul>"
 
     # Close HTML content
     html_content += "</body></html>"
