@@ -58,7 +58,7 @@ if response.status_code == 200:
                             html_content += f"<li><h2>{item.text}</h2></li>"
                     html_content += "</ul>"
                 else:
-                    html_content += "<h2>Geen School</h2>"
+                    html_content += "<h2>Geen Middagmaal</h2>"
 
     # Close HTML content
     html_content += "</body></html>"
