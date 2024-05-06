@@ -27,37 +27,48 @@ if response.status_code == 200:
     # Get current date
     current_date_obj = datetime.now()
 
-    # Iterate over the days listed on the website
-    day_headers = soup.find_all("div", class_="day__header--day")
-    for day_header in day_headers:
-        date_text = day_header.find_next("div", class_="day__header--date").text.lower()
-        header_date = datetime.strptime(date_text, "%d %B %Y")
-        
-        # Check if the date is a valid day
-        if is_valid_day(header_date):
-            # Check if the date is within the next 5 days
-            if current_date_obj <= header_date <= current_date_obj + timedelta(days=4):
-                current_day_items_menu = day_header.find_next("div", class_="day__content--menu").find_all("div", class_="day__content--item")
-                current_day_items_soup = day_header.find_next("div", class_="day__content--soup").find_all("div", class_="day__content--item")
+    # Iterate over the next 5 dates (including the current date)
+    for i in range(5):
+        next_date = current_date_obj + timedelta(days=i)
+        if is_valid_day(next_date):
+            # Find the day element for the current date
+            day_element = soup.find("div", class_="day", attrs={"data-mob-scroll-target": next_date.strftime("%d-%m-%Y")})
+            if day_element:
+                # Extract the day of the week and date
+                day_info = day_element.find("div", class_="day__header--info")
+                day_of_week = day_info.find("div", class_="day__header--day").text.strip()
+                date_text = day_info.find("div", class_="day__header--date").text.strip()
+                header_date = datetime.strptime(date_text, "%d %B %Y")
+
+                # Extract the menu items for soup and menu
+                soup_items = day_element.find("div", class_="day__content--soup")
+                menu_items = day_element.find("div", class_="day__content--menu")
 
                 # Add date as heading
-                html_content += f"<h1>{header_date.strftime('%A, %d %B %Y')}</h1>"
+                html_content += f"<h1>{day_of_week}, {header_date.strftime('%d %B %Y')}</h1>"
 
-                # Add menu items
-                html_content += "<ul>"
-                for item in current_day_items_soup:
-                    html_content += f"<li><h2>{item.text}</h2></li>"
-                for item in current_day_items_menu:
-                    html_content += f"<li><h2>{item.text}</h2></li>"
-                html_content += "</ul>"
+                # Add menu items or "Geen School" if no items are found
+                if soup_items or menu_items:
+                    html_content += "<ul>"
+                    if soup_items:
+                        for item in soup_items.find_all("div", class_="day__content--item"):
+                            html_content += f"<li><h2>{item.text}</h2></li>"
+                    if menu_items:
+                        for item in menu_items.find_all("div", class_="day__content--item"):
+                            html_content += f"<li><h2>{item.text}</h2></li>"
+                    html_content += "</ul>"
+                else:
+                    html_content += "<p>Geen School</p>"
 
     # Close HTML content
     html_content += "</body></html>"
 
     # Save the HTML output to a file
-    with open("index.html", "w", encoding="utf-8") as file:
-        file.write(html_content)
-        
-    print("HTML file saved as index.html")
+    try:
+        with open("index.html", "w", encoding="utf-8") as file:
+            file.write(html_content)
+        print("HTML file saved as index.html")
+    except Exception as e:
+        print("Error:", e)
 else:
     print("/")
