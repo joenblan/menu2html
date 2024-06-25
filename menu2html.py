@@ -22,7 +22,7 @@ if response.status_code == 200:
     soup = BeautifulSoup(response.content, 'html.parser')
 
     # Create HTML content
-    html_content = "<!DOCTYPE html><html><head><title>Menu for the week</title><link rel='stylesheet' type='text/css' href='style.css'></head><body>"
+    html_content = "<!DOCTYPE html><html><head><title>Weekmenu De Parkschool</title><link rel='stylesheet' type='text/css' href='style.css'></head><body>"
 
     # Get current date
     current_date_obj = datetime.now()
