@@ -38,7 +38,9 @@ if response.status_code == 200:
                 day_info = day_element.find("div", class_="day__header--info")
                 day_of_week = day_info.find("div", class_="day__header--day").text.strip()
                 date_text = day_info.find("div", class_="day__header--date").text.strip()
-                header_date = datetime.strptime(date_text, "%d %B %Y")
+
+                # Construct the date with the current year
+                header_date = datetime.strptime(f"{date_text} {current_date_obj.year}", "%d %B %Y")
 
                 # Extract the menu items for soup and menu
                 soup_items = day_element.find("div", class_="day__content--soup")
@@ -71,4 +73,4 @@ if response.status_code == 200:
     except Exception as e:
         print("Error:", e)
 else:
-    print("/")
+    print("Failed to retrieve the menu.")
