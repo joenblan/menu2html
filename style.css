@@ -53,5 +53,4 @@ a:hover {
 body, h1, h2, ul {
   margin: 0 auto;
   max-width: 80%; /* Constrain content width for better focus */
-  padding: 1vh;
 }
