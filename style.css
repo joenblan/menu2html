@@ -1,25 +1,57 @@
+/* Importing Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #FEFEFE; /* Background color of the school */
-  color: #147A3B; /* Text color */
-  text-align: center; /* Center align all text */
+  font-family: 'Roboto', sans-serif; /* Modern font for the body */
+  background-color: #F9F9F9; /* Subtle light grey for a sleek background */
+  color: #333333; /* Neutral dark grey for text color */
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6; /* Improve readability */
 }
 
 h1 {
-  color: #7C462A; /* Heading color */
-  font-size: calc(15vh / 5); /* 15% of the viewport height divided by 5 */
-  margin-bottom: 1vh; /* Adjust margin for h1 */
+  font-family: 'Open Sans', sans-serif; /* Bold and clean heading font */
+  color: #2A9D8F; /* Modern teal color for heading */
+  font-size: calc(15vh / 5); /* Keep consistent scaling */
+  margin-bottom: 1vh;
+  text-transform: uppercase; /* Add a modern touch */
+  letter-spacing: 2px; /* Space out letters for style */
 }
 
 h2 {
-  font-size: calc(60vh / 30); /* Remaining 85% of the viewport height divided by 30 */
+  font-family: 'Open Sans', sans-serif;
+  font-size: calc(60vh / 30); /* Keep consistent scaling */
+  color: #264653; /* Complementary deep blue-green for subheadings */
+  margin-top: 1vh;
 }
 
 ul {
-  list-style-type: none; /* Remove bullet points */
+  list-style-type: none;
   padding: 0;
+  margin: 1vh 0;
 }
 
 li {
-  margin-bottom: 0.5vh; /* Adjust margin for list items */
+  font-size: 1em; /* Keep original scaling */
+  margin-bottom: 0.5vh; /* Ensure compact spacing */
+  color: #6D6875; /* Soft muted purple for a modern aesthetic */
+}
+
+a {
+  color: #2A9D8F; /* Matching link color */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Add spacing and alignment for a modern look */
+body, h1, h2, ul {
+  margin: 0 auto;
+  max-width: 80%; /* Constrain content width for better focus */
+  padding: 1vh;
 }
