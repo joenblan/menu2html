@@ -16,6 +16,7 @@ h1 {
   color: #2A9D8F; /* Modern teal color for heading */
   font-size: calc(15vh / 5); /* Keep consistent scaling */
   margin-bottom: 1vh;
+  margin-top: 1vh;
   text-transform: uppercase; /* Add a modern touch */
   letter-spacing: 2px; /* Space out letters for style */
 }
