@@ -13,7 +13,7 @@ body {
 
 h1 {
   font-family: 'Lato', sans-serif; /* Bold and clean heading font */
-  color: #d5d900; /* Modern teal color for heading */
+  color: #a5a500; /* Modern teal color for heading */
   font-size: calc(15vh / 5); /* Keep consistent scaling */
   margin-bottom: 1vh;
   margin-top: 1vh;
