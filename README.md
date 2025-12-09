@@ -3,4 +3,4 @@ Tool to scrape the Hanssens Catering menu and convert it to a basic webpage (for
 ## To use
 1. Go to hanssens and find your menu link that is structured like this: https://order.hanssens.be/menu/[menu-code]/[school-name]
 2. Replace the url on line 14 of menu2html.py
-3. Run the python script
+3. Run the python script (and set up a daily workflow with GitHub Actions)
