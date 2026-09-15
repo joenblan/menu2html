@@ -19,6 +19,7 @@ import datetime as dt
 import json
 import re
 import sys
+import statistics
 import unicodedata
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -47,8 +48,17 @@ MAAND_NAAM = {v: k for k, v in MAANDEN.items()}
 
 # Regels die nooit een menu-item zijn.
 RUIS = re.compile(
-    r"^(menu|maandmenu|week|dessert|allergen|wijziging|voorbehoud|"
-    r"pagina|\d+\s*$|bron|tel|e-?mail|www\.|https?://)", re.I)
+    r"^([*#]|menu|maandmenu|week|dessert|allergen|wijziging|voorbehoud|"
+    r"de maaltijden|de ingredi|pagina|\d+\s*$|bron|tel|e-?mail|www\.|"
+    r"https?://)", re.I)
+
+# Cellen die alleen een allergenencode zijn: (1-9), (1,3,6,7), (11)
+ALLERGEEN = re.compile(r"^\(\s*\d[\da-z,\-\s]*\)?$", re.I)
+# Dezelfde code achteraan een gerechtnaam: "Kalfsburger (1-6-7)"
+ALLERGEEN_ACHTER = re.compile(r"\s*\(\s*\d[\da-z,\-\s]*\)?\s*$", re.I)
+# Alleen in de kopregel van een weekblok: 31/08/2026
+RASTERDATUM = re.compile(r"^\s*(\d{1,2})/(\d{1,2})/(\d{4})\s*$")
+WEEKDAG_CEL = re.compile(r"^\s*(?:" + "|".join(WEEKDAGEN) + r")\s*$", re.I)
 VEGGIE = re.compile(r"vegetarisch|veggie|veggy|plantaardig", re.I)
 
 
@@ -171,7 +181,7 @@ def _ontdubbel(items: list[str]) -> list[str]:
     return uit
 
 
-def woordrijen(pad: Path) -> list[list[str]]:
+def cellenrijen(pad: Path) -> list[list[list[tuple[str, float, float]]]]:
     """Leest de pdf als een raster van cellen op basis van de x-coördinaten
     van de woorden. Nodig omdat veel menu-pdf's een tabel tekenen zonder
     lijnen én zonder brede tussenruimte: dan vindt extract_tables() niets en
@@ -179,9 +189,10 @@ def woordrijen(pad: Path) -> list[list[str]]:
     import pdfplumber
     import statistics
 
-    rijen: list[list[str]] = []
+    paginas: list[list[list[tuple[str, float, float]]]] = []
     with pdfplumber.open(pad) as pdf:
         for bladzijde in pdf.pages:
+            rijen: list[list[tuple[str, float, float]]] = []
             woorden = bladzijde.extract_words() or []
             if not woorden:
                 continue
@@ -223,15 +234,28 @@ def woordrijen(pad: Path) -> list[list[str]]:
                     continue
                 gaten = [ws[i + 1]["x0"] - ws[i]["x1"] for i in range(len(ws) - 1)]
 
-                cellen, huidig = [], [ws[0]["text"]]
+                cellen, huidig = [], [ws[0]]
                 for i, gat in enumerate(gaten):
                     if gat > drempel:
-                        cellen.append(" ".join(huidig))
+                        cellen.append(huidig)
                         huidig = []
-                    huidig.append(ws[i + 1]["text"])
-                cellen.append(" ".join(huidig))
-                rijen.append([c.strip(" -:\u2013\u2014") for c in cellen if c.strip()])
-    return rijen
+                    huidig.append(ws[i + 1])
+                cellen.append(huidig)
+
+                rij = []
+                for groep_w in cellen:
+                    tekst = " ".join(w["text"] for w in groep_w).strip()
+                    if tekst:
+                        rij.append((tekst, groep_w[0]["x0"], groep_w[-1]["x1"]))
+                if rij:
+                    rijen.append(rij)
+            paginas.append(rijen)
+    return paginas
+
+
+def woordrijen(pad: Path) -> list[list[str]]:
+    """Alleen de tekst, voor de eenvoudige parsers en voor --dump."""
+    return [[c[0] for c in rij] for rijen in cellenrijen(pad) for rij in rijen]
 
 
 def parse_woordrijen(rijen: list[list[str]], jaar: int) -> list[dict]:
@@ -258,6 +282,91 @@ def parse_woordrijen(rijen: list[list[str]], jaar: int) -> list[dict]:
     for d in dagen:
         d["items"] = _ontdubbel(d["items"])
     return [d for d in dagen if d["items"]]
+
+
+def parse_weekraster(paginas) -> list[dict]:
+    """Voor het maandmenu van de cateraar: per week een blok met de dagen als
+    kolommen en de gangen als rijen (Soep, Eiwitcomponent, Saus, Groenten,
+    Zetmeel, Vegetarisch).
+
+    De kolommen zijn niet op index te herkennen: een dag zonder soep levert
+    gewoon een cel minder op, zodat elke rij een ander aantal cellen heeft.
+    Daarom wordt elke cel toegekend aan de dag waarvan het midden van de
+    datumkop er het dichtst bij ligt."""
+    dagen: dict[dt.date, dict[str, list[str]]] = {}
+
+    for rijen in paginas:
+        kolommen: list[tuple[float, dt.date]] = []
+        grens_links = 0.0
+
+        for cellen in rijen:
+            # 1. Kopregel van een weekblok?
+            datums = [(t, (x0 + x1) / 2) for t, x0, x1 in cellen
+                      if RASTERDATUM.match(t)]
+            if len(datums) >= 2:
+                kolommen = []
+                for tekst, midden in datums:
+                    d, m, j = RASTERDATUM.match(tekst).groups()
+                    try:
+                        kolommen.append((midden, dt.date(int(j), int(m), int(d))))
+                    except ValueError:
+                        pass
+                kolommen.sort()
+                if len(kolommen) >= 2:
+                    afstand = statistics.median(
+                        [kolommen[i + 1][0] - kolommen[i][0]
+                         for i in range(len(kolommen) - 1)])
+                    grens_links = kolommen[0][0] - afstand / 2
+                for _, datum in kolommen:
+                    dagen.setdefault(datum, {"items": [], "veggie": []})
+                continue
+
+            if not kolommen:
+                continue
+            if all(WEEKDAG_CEL.match(t) for t, _, _ in cellen):
+                continue
+
+            # De allergenenlegende en de voetnoten staan onderaan het blok en
+            # lopen over de volle breedte. Alles daarna hoort bij geen enkele
+            # dag meer, dus we sluiten het weekblok hier af.
+            if any(RUIS.match(t) for t, _, _ in cellen):
+                kolommen = []
+                continue
+
+            # 2. Het label van de gang staat links van de eerste dagkolom.
+            label = ""
+            inhoud = []
+            for tekst, x0, x1 in cellen:
+                if (x0 + x1) / 2 < grens_links:
+                    label = tekst
+                else:
+                    inhoud.append((tekst, (x0 + x1) / 2))
+
+            if RUIS.match(label) or (not label and inhoud
+                                     and RUIS.match(inhoud[0][0])):
+                continue
+
+            veggie = bool(VEGGIE.search(label))
+
+            # 3. Elke cel bij de dichtstbijzijnde dagkolom leggen.
+            for tekst, midden in inhoud:
+                if ALLERGEEN.match(tekst):
+                    continue
+                schoon = ALLERGEEN_ACHTER.sub("", tekst).strip(" -:\u2013")
+                if not schoon or RUIS.match(schoon):
+                    continue
+                _, datum = min(kolommen, key=lambda k: abs(k[0] - midden))
+                sleutel = "veggie" if veggie else "items"
+                dagen[datum][sleutel].append(schoon)
+
+    uit = []
+    for datum in sorted(dagen):
+        items = _ontdubbel(dagen[datum]["items"])
+        veggie = _ontdubbel(dagen[datum]["veggie"])
+        if items or veggie:
+            uit.append({"datum": datum.isoformat(), "items": items,
+                        "veggie": veggie})
+    return uit
 
 
 def parse_tabellen(tabellen, jaar: int) -> list[dict]:
@@ -429,14 +538,24 @@ function korteDatum(d) {{
          MAANDEN[d.getMonth()].slice(0, 3);
 }}
 
-function gerechten(dag, klasse) {{
-  let h = '<ul class="' + klasse + '">';
+function gerechtenGroot(dag) {{
+  let h = '<ul class="groot">';
   dag.items.forEach(i => {{ h += '<li>' + esc(i) + '</li>'; }});
   h += '</ul>';
   if (dag.veggie && dag.veggie.length) {{
-    h += '<p class="veggiekop">Vegetarisch</p><ul class="' + klasse + ' veggie">';
-    dag.veggie.forEach(i => {{ h += '<li>' + esc(i) + '</li>'; }});
-    h += '</ul>';
+    h += '<p class="veggiekop">Vegetarisch: ' +
+         esc(dag.veggie.join(", ")) + '</p>';
+  }}
+  return h;
+}}
+
+// De dagen erna staan als één doorlopende regel. Een volledige lijst per dag
+// past niet naast het menu van vandaag, en voor vooruitkijken volstaat de
+// grote lijn.
+function gerechtenKlein(dag) {{
+  let h = '<p class="kort">' + esc(dag.items.join(" \u00b7 ")) + '</p>';
+  if (dag.veggie && dag.veggie.length) {{
+    h += '<p class="kortveggie">Veggie: ' + esc(dag.veggie.join(", ")) + '</p>';
   }}
   return h;
 }}
@@ -462,7 +581,7 @@ function teken() {{
   let html = '<section id="hoofd">' +
     '<p class="aanloop">' + (isVandaag ? "Vandaag" : "Volgende maaltijd") + '</p>' +
     '<p class="dagnaam">' + esc(langeDatum(eersteDatum)) + '</p>' +
-    gerechten(eerste, "groot") +
+    gerechtenGroot(eerste) +
     '</section>';
 
   const rest = komend.slice(1, 1 + MAX_VOORUIT);
@@ -471,7 +590,7 @@ function teken() {{
     html += '<h2>De volgende dagen</h2><div class="rijen">';
     rest.forEach(d => {{
       html += '<article><h3>' + esc(korteDatum(alsDatum(d.datum))) + '</h3>' +
-              '<div class="gerechten">' + gerechten(d, "klein") +
+              '<div class="gerechten">' + gerechtenKlein(d) +
               '</div></article>';
     }});
     html += '</div>';
@@ -539,6 +658,11 @@ def main() -> int:
     if args.dump:
         print("\n===== RUWE TEKST =====")
         print(tekst)
+        print("\n===== ALS WEEKRASTER =====")
+        for dag in parse_weekraster(cellenrijen(pad)):
+            print(f"  {dag['datum']}: {' | '.join(dag['items'])}")
+            if dag["veggie"]:
+                print(f"       veggie: {' | '.join(dag['veggie'])}")
         print("\n===== CELLEN OP WOORDPOSITIE =====")
         for cellen in woordrijen(pad)[:40]:
             print("  | " + " | ".join(cellen))
@@ -553,15 +677,20 @@ def main() -> int:
     if "januari" in bron.lower() and vandaag.month == 12:
         jaar += 1
 
-    dagen = parse_tabellen(tabellen, jaar)
-    hoe = "tabellijnen"
+    # 1. Het weekraster van de cateraar: dagen als kolommen, gangen als rijen.
+    dagen = parse_weekraster(cellenrijen(pad))
+    hoe = "weekraster"
+
+    # 2 t.e.m. 4: vangnetten voor een andere opmaak.
     if len(dagen) < 3:
-        dagen = parse_woordrijen(woordrijen(pad), jaar)
+        dagen = splits_veggie(parse_tabellen(tabellen, jaar))
+        hoe = "tabellijnen"
+    if len(dagen) < 3:
+        dagen = splits_veggie(parse_woordrijen(woordrijen(pad), jaar))
         hoe = "woordposities"
     if len(dagen) < 3:
-        dagen = parse_tekst(tekst, jaar)
+        dagen = splits_veggie(parse_tekst(tekst, jaar))
         hoe = "tekstregels"
-    dagen = splits_veggie(dagen)
 
     print(f"{len(dagen)} dag(en) herkend via {hoe}")
     for d in dagen[:8]:

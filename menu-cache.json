@@ -1,45 +1,200 @@
 {
-  "bron": "Maandmenu September",
+  "bron": "echt.pdf",
   "dagen": [
     {
-      "datum": "2026-08-31",
+      "datum": "2026-09-01",
       "items": [
-        "Dinsdag 1/09/2026",
-        "Woensdag 2/09/2026",
-        "Donderdag 3/09/2026",
-        "Vrijdag 4/09/2026"
+        "Groentesoep",
+        "kipfilet",
+        "Spaanse saus",
+        "appelmoes",
+        "romaneco in witte saus",
+        "puree aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Quornfilet"
+      ]
+    },
+    {
+      "datum": "2026-09-03",
+      "items": [
+        "Courgettesoep",
+        "Kalfsburger",
+        "Stroganoffsaus",
+        "Komkommerslaatje",
+        "gestoomde aardappelen"
+      ],
+      "veggie": [
+        "Falafelburger"
+      ]
+    },
+    {
+      "datum": "2026-09-04",
+      "items": [
+        "Paprikasoep",
+        "Griekse pastasalade",
+        "boontjes - paparika - rode ajuin",
+        "mini -tomaat",
+        "Koude pastasalade"
+      ],
+      "veggie": [
+        "Griekse pastasalade"
+      ]
     },
     {
       "datum": "2026-09-07",
       "items": [
-        "Dinsdag 8/09/2026",
-        "Woensdag 9/09/2026",
-        "Donderdag 10/09/2026",
-        "Vrijdag 11/09/2026"
+        "Preisoep",
+        "Kipdonut",
+        "Bloemkool in witte saus",
+        "Ratatouille",
+        "Tex mex aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Falafel"
+      ]
+    },
+    {
+      "datum": "2026-09-08",
+      "items": [
+        "Tomatensoep",
+        "Braadworst",
+        "Uiensaus",
+        "Erwten en Wortelen",
+        "Witte kool",
+        "Natuur aardappelen"
+      ],
+      "veggie": [
+        "Chipolata vegan"
+      ]
+    },
+    {
+      "datum": "2026-09-10",
+      "items": [
+        "Pompoensoep",
+        "Vol Au Vent",
+        "Mexicaans slaatje",
+        "Gebakken aardappelen"
+      ],
+      "veggie": [
+        "Vol au Vegie"
+      ]
+    },
+    {
+      "datum": "2026-09-11",
+      "items": [
+        "kervelsoep",
+        "Spek en ham",
+        "Carbonarasaus",
+        "Prei",
+        "Pasta"
+      ],
+      "veggie": [
+        "Prei en kaassaus"
+      ]
     },
     {
       "datum": "2026-09-14",
       "items": [
-        "Dinsdag 15/09/2026",
-        "Woensdag 16/09/2026",
-        "Donderdag 17/09/2026",
-        "Vrijdag 18/09/2026"
+        "Pastinaaksoep",
+        "Gevogeltekrokant",
+        "Jonge wortelen",
+        "Gebakken courgette",
+        "Natuur aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Shnitzel"
+      ]
+    },
+    {
+      "datum": "2026-09-15",
+      "items": [
+        "Champignonroomsoep",
+        "Kip",
+        "tikka masala",
+        "Brunoise groenten",
+        "Gestoofde Broccoli",
+        "rijst"
+      ],
+      "veggie": [
+        "Tikka masala vege"
+      ]
+    },
+    {
+      "datum": "2026-09-17",
+      "items": [
+        "Wortelsoep",
+        "Balletjes",
+        "Tomatensaus",
+        "Coleslaw",
+        "Gebakken aardappelen"
+      ],
+      "veggie": [
+        "Vegetarische balletjes"
+      ]
+    },
+    {
+      "datum": "2026-09-18",
+      "items": [
+        "Parmentiersoep",
+        "Viskrokant",
+        "Tartaarsaus",
+        "Spinazie in de roomsaus",
+        "Wortelpuree"
+      ],
+      "veggie": [
+        "Burger"
+      ]
     },
     {
       "datum": "2026-09-21",
       "items": [
-        "Dinsdag 22/09/2026",
-        "Woensdag 23/09/2026",
-        "Donderdag 24/09/2026",
-        "Vrijdag 25/09/2026"
+        "Groentesoep",
+        "kipnuggets",
+        "Appelmoes",
+        "gestoofde boontjes",
+        "Aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Nuggets"
+      ]
+    },
+    {
+      "datum": "2026-09-22",
+      "items": [
+        "kervelsoep",
+        "boomstammetje",
+        "Provençaalsesaus",
+        "Bloemkool bechamelsaus",
+        "gebakken aardapplen"
+      ],
+      "veggie": [
+        "Provençaals stoofpotje met quorn"
+      ]
+    },
+    {
+      "datum": "2026-09-24",
+      "items": [
+        "tomatensoep",
+        "Kalkoengebraad",
+        "champignonssaus",
+        "witloofsalade",
+        "puree"
+      ],
+      "veggie": [
+        "quorn filet"
+      ]
+    },
+    {
+      "datum": "2026-09-25",
+      "items": [
+        "broccolisoep",
+        "No - Bull Bolognaise",
+        "Pasta"
+      ],
+      "veggie": [
+        "Vege Bolognaisesaus"
+      ]
     }
   ]
 }

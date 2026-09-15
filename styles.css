@@ -84,10 +84,10 @@ main {
 
 ul.groot { list-style: none; }
 ul.groot li {
-  font-size: 4.6vh;
-  line-height: 1.25;
+  font-size: 4vh;
+  line-height: 1.2;
   font-weight: 500;
-  padding: 0.9vh 0 0.9vh 2.6vh;
+  padding: 0.7vh 0 0.7vh 2.6vh;
   position: relative;
   overflow-wrap: anywhere;
 }
@@ -97,7 +97,7 @@ ul.groot li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 2.4vh;
+  top: 2.1vh;
   width: 1vh;
   height: 1vh;
   border-radius: 50%;
@@ -139,23 +139,25 @@ ul.groot li::before {
   padding: 1.6vh 0;
   border-bottom: 0.2vh solid var(--lijn);
 }
-ul.klein { list-style: none; }
-ul.klein li {
+.kort {
   font-size: 2.9vh;
-  line-height: 1.35;
+  line-height: 1.3;
   overflow-wrap: anywhere;
+}
+.kortveggie {
+  font-size: 2.4vh;
+  line-height: 1.3;
+  color: var(--gedempt);
+  margin-top: 0.5vh;
 }
 
 .veggiekop {
-  margin-top: 1.4vh;
-  font-size: 2.2vh;
+  margin-top: 2.2vh;
+  font-size: 2.8vh;
   font-weight: 600;
   color: var(--accent);
+  overflow-wrap: anywhere;
 }
-#hoofd .veggiekop { font-size: 2.6vh; margin-top: 2.4vh; }
-ul.veggie li { color: var(--gedempt); }
-ul.groot.veggie li { font-size: 3.4vh; }
-ul.groot.veggie li::before { background: var(--accent-zacht); top: 1.8vh; }
 
 .leeg {
   grid-column: 1 / -1;
