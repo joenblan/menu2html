@@ -1,0 +1,45 @@
+{
+  "bron": "Maandmenu September",
+  "dagen": [
+    {
+      "datum": "2026-08-31",
+      "items": [
+        "Dinsdag 1/09/2026",
+        "Woensdag 2/09/2026",
+        "Donderdag 3/09/2026",
+        "Vrijdag 4/09/2026"
+      ],
+      "veggie": []
+    },
+    {
+      "datum": "2026-09-07",
+      "items": [
+        "Dinsdag 8/09/2026",
+        "Woensdag 9/09/2026",
+        "Donderdag 10/09/2026",
+        "Vrijdag 11/09/2026"
+      ],
+      "veggie": []
+    },
+    {
+      "datum": "2026-09-14",
+      "items": [
+        "Dinsdag 15/09/2026",
+        "Woensdag 16/09/2026",
+        "Donderdag 17/09/2026",
+        "Vrijdag 18/09/2026"
+      ],
+      "veggie": []
+    },
+    {
+      "datum": "2026-09-21",
+      "items": [
+        "Dinsdag 22/09/2026",
+        "Woensdag 23/09/2026",
+        "Donderdag 24/09/2026",
+        "Vrijdag 25/09/2026"
+      ],
+      "veggie": []
+    }
+  ]
+}

@@ -1,1 +1,133 @@
-<!DOCTYPE html><html><head><title>Weekmenu De Parkschool</title><link rel='stylesheet' type='text/css' href='style.css'></head><body><br><h1>dinsdag, 15 september 2026</h1><ul><li><h2>Tomatensoep</h2></li><li><h2>Visfilet in bieslookroomsaus</h2></li><li><h2>Broccoli</h2></li><li><h2>Puree</h2></li></ul><h1>donderdag, 17 september 2026</h1><ul><li><h2>Boerensoep</h2></li><li><h2>Stoofpotje</h2></li><li><h2>Appelmoes</h2></li><li><h2>Gebakken aardappelen</h2></li></ul><h1>vrijdag, 18 september 2026</h1><ul><li><h2>Crecysoep</h2></li><li><h2>Varkensbroodje</h2></li><li><h2>Jachtsaus</h2></li><li><h2>Witte kool</h2></li><li><h2>Gestoomde aardappelen</h2></li></ul></body></html>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>Menu Basisschool Het Park</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet"
+      href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="scherm">
+  <header>
+    <div>
+      <div class="merk">Basisschool Het Park</div>
+      <div class="titel">Wat eten we vandaag</div>
+    </div>
+    <div class="vandaag" id="vandaag"></div>
+  </header>
+
+  <main id="inhoud">
+    <noscript><p class="leeg">Zet JavaScript aan om het menu te tonen.</p></noscript>
+  </main>
+
+  <footer>
+    <span>Volledig maandmenu op www.basisschoolhetpark.be</span>
+    <span class="dim">Bijgewerkt op 15 september 2026</span>
+  </footer>
+</div>
+
+<script>
+const DATA = {"bijgewerkt_op": "2026-09-15", "bron": "Maandmenu September", "dagen": [{"datum": "2026-08-31", "items": ["Dinsdag 1/09/2026", "Woensdag 2/09/2026", "Donderdag 3/09/2026", "Vrijdag 4/09/2026"], "veggie": []}, {"datum": "2026-09-07", "items": ["Dinsdag 8/09/2026", "Woensdag 9/09/2026", "Donderdag 10/09/2026", "Vrijdag 11/09/2026"], "veggie": []}, {"datum": "2026-09-14", "items": ["Dinsdag 15/09/2026", "Woensdag 16/09/2026", "Donderdag 17/09/2026", "Vrijdag 18/09/2026"], "veggie": []}, {"datum": "2026-09-21", "items": ["Dinsdag 22/09/2026", "Woensdag 23/09/2026", "Donderdag 24/09/2026", "Vrijdag 25/09/2026"], "veggie": []}]};
+
+// Hoeveel dagen er rechts naast de maaltijd van vandaag passen.
+const MAX_VOORUIT = 3;
+const HERLAAD_MS = 30 * 60 * 1000;
+
+const WEEKDAGEN = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag",
+                   "vrijdag", "zaterdag"];
+const MAANDEN = ["januari", "februari", "maart", "april", "mei", "juni", "juli",
+                 "augustus", "september", "oktober", "november", "december"];
+
+function alsDatum(iso) {
+  const [j, m, d] = iso.split("-").map(Number);
+  return new Date(j, m - 1, d);
+}
+function dagVan(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+function langeDatum(d) {
+  return WEEKDAGEN[d.getDay()] + " " + d.getDate() + " " + MAANDEN[d.getMonth()];
+}
+function korteDatum(d) {
+  return WEEKDAGEN[d.getDay()] + " " + d.getDate() + " " +
+         MAANDEN[d.getMonth()].slice(0, 3);
+}
+
+function gerechten(dag, klasse) {
+  let h = '<ul class="' + klasse + '">';
+  dag.items.forEach(i => { h += '<li>' + esc(i) + '</li>'; });
+  h += '</ul>';
+  if (dag.veggie && dag.veggie.length) {
+    h += '<p class="veggiekop">Vegetarisch</p><ul class="' + klasse + ' veggie">';
+    dag.veggie.forEach(i => { h += '<li>' + esc(i) + '</li>'; });
+    h += '</ul>';
+  }
+  return h;
+}
+
+function teken() {
+  const nu = new Date();
+  const vandaag = dagVan(nu);
+  document.getElementById("vandaag").textContent = langeDatum(nu);
+
+  const komend = DATA.dagen.filter(d => alsDatum(d.datum) >= vandaag);
+  const inhoud = document.getElementById("inhoud");
+
+  if (komend.length === 0) {
+    inhoud.innerHTML =
+      '<p class="leeg">Geen menu beschikbaar. Kijk op www.basisschoolhetpark.be</p>';
+    return;
+  }
+
+  const eerste = komend[0];
+  const eersteDatum = alsDatum(eerste.datum);
+  const isVandaag = eersteDatum.getTime() === vandaag.getTime();
+
+  let html = '<section id="hoofd">' +
+    '<p class="aanloop">' + (isVandaag ? "Vandaag" : "Volgende maaltijd") + '</p>' +
+    '<p class="dagnaam">' + esc(langeDatum(eersteDatum)) + '</p>' +
+    gerechten(eerste, "groot") +
+    '</section>';
+
+  const rest = komend.slice(1, 1 + MAX_VOORUIT);
+  html += '<section id="later">';
+  if (rest.length) {
+    html += '<h2>De volgende dagen</h2><div class="rijen">';
+    rest.forEach(d => {
+      html += '<article><h3>' + esc(korteDatum(alsDatum(d.datum))) + '</h3>' +
+              '<div class="gerechten">' + gerechten(d, "klein") +
+              '</div></article>';
+    });
+    html += '</div>';
+  }
+  html += '</section>';
+
+  inhoud.innerHTML = html;
+}
+
+// Een scherm dat maandenlang hetzelfde toont brandt in. Elke vijf minuten
+// een paar pixels opschuiven is genoeg om dat te voorkomen.
+const SCHUIF = [[0,0],[2,1],[3,0],[2,-1],[0,-2],[-2,-1],[-3,0],[-2,1]];
+let schuifIndex = 0;
+function pixelShift() {
+  const [x, y] = SCHUIF[schuifIndex % SCHUIF.length];
+  document.getElementById("scherm").style.transform =
+    "translate(" + x + "px," + y + "px)";
+  schuifIndex++;
+}
+
+teken();
+pixelShift();
+setInterval(teken, 60 * 1000);
+setInterval(pixelShift, 5 * 60 * 1000);
+setTimeout(() => location.reload(), HERLAAD_MS);
+</script>
+
+</body>
+</html>
