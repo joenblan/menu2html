@@ -1,0 +1,178 @@
+/* Menubord voor digital signage, 1920x1080 liggend.
+   Kleuren komen uit de huisstijl (skin-bshetpark.css):
+     color1 = teal   #009886 / #00655a / #004d44 / #55c5b8
+     color2 = limoen #a1d683
+   Alles is in vh gezet en het scherm is 16:9, dus de pagina schaalt mee met
+   elke resolutie met die verhouding. */
+
+:root {
+  --merk-diep: #004d44;
+  --merk-paneel: #00655a;
+  --merk-teal: #009886;
+  --lijn: rgba(220, 248, 244, 0.18);
+  --tekst: #ffffff;
+  --gedempt: #9ecfc7;
+  --accent: #a1d683;
+  --accent-zacht: #55c5b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: none;
+  background: var(--merk-diep);
+  color: var(--tekst);
+  font-family: "General Sans", "GeneralSans", Arial, Helvetica,
+               "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#scherm {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 12vh 1fr 6vh;
+  padding: 0 4vh;
+  will-change: transform;
+}
+
+/* ---- kop ---- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5vh;
+  border-bottom: 0.3vh solid var(--merk-teal);
+}
+header .merk { font-size: 2.2vh; color: var(--gedempt); margin-bottom: 0.4vh; }
+header .titel { font-size: 3.6vh; font-weight: 600; letter-spacing: -0.015em; }
+header .vandaag {
+  font-size: 3vh;
+  color: var(--gedempt);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- inhoud ---- */
+main {
+  display: grid;
+  grid-template-columns: 44% minmax(0, 1fr);
+  gap: 5vh;
+  padding: 4vh 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* De maaltijd van vandaag */
+#hoofd {
+  background: var(--merk-paneel);
+  border-left: 1vh solid var(--accent);
+  padding: 4vh;
+  min-width: 0;
+  overflow: hidden;
+}
+#hoofd .aanloop { font-size: 2.8vh; color: var(--gedempt); }
+#hoofd .dagnaam {
+  font-size: 4.4vh;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0.6vh 0 3vh;
+}
+
+ul.groot { list-style: none; }
+ul.groot li {
+  font-size: 4.6vh;
+  line-height: 1.25;
+  font-weight: 500;
+  padding: 0.9vh 0 0.9vh 2.6vh;
+  position: relative;
+  overflow-wrap: anywhere;
+}
+/* Het bolletje zit op een pseudo-element, dus het kan nooit in de tekst
+   lopen zoals een list-marker met een te smalle inspring wel zou doen. */
+ul.groot li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2.4vh;
+  width: 1vh;
+  height: 1vh;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* De dagen erna */
+#later { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+#later h2 {
+  font-size: 2.6vh;
+  font-weight: 600;
+  color: var(--gedempt);
+  padding-bottom: 1vh;
+  border-bottom: 0.2vh solid var(--lijn);
+  margin-bottom: 1.4vh;
+}
+/* Eén raster voor alle dagen samen, met de datumkolom op 'max-content'.
+   Zo staan de gerechten van elke dag op dezelfde lijn en kan een lange
+   weekdagnaam nooit over de gerechten heen lopen. */
+#later .rijen {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 3vh;
+  align-content: start;
+}
+#later article { display: contents; }
+#later h3 {
+  grid-column: 1;
+  font-size: 3vh;
+  font-weight: 600;
+  color: var(--accent-zacht);
+  white-space: nowrap;
+  padding: 1.6vh 0;
+  border-bottom: 0.2vh solid var(--lijn);
+}
+#later .gerechten {
+  grid-column: 2;
+  min-width: 0;
+  padding: 1.6vh 0;
+  border-bottom: 0.2vh solid var(--lijn);
+}
+ul.klein { list-style: none; }
+ul.klein li {
+  font-size: 2.9vh;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.veggiekop {
+  margin-top: 1.4vh;
+  font-size: 2.2vh;
+  font-weight: 600;
+  color: var(--accent);
+}
+#hoofd .veggiekop { font-size: 2.6vh; margin-top: 2.4vh; }
+ul.veggie li { color: var(--gedempt); }
+ul.groot.veggie li { font-size: 3.4vh; }
+ul.groot.veggie li::before { background: var(--accent-zacht); top: 1.8vh; }
+
+.leeg {
+  grid-column: 1 / -1;
+  align-self: center;
+  text-align: center;
+  font-size: 4.4vh;
+  color: var(--gedempt);
+}
+
+/* ---- voet ---- */
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4vh;
+  font-size: 2.4vh;
+  color: var(--gedempt);
+  border-top: 0.2vh solid var(--lijn);
+}
+footer .dim { font-size: 1.9vh; color: var(--lijn); }
