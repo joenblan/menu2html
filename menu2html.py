@@ -494,7 +494,7 @@ def bouw_html(dagen: list[dict], vandaag: dt.date, bron: str) -> str:
   <header>
     <div>
       <div class="merk">{SCHOOL_NAAM}</div>
-      <div class="titel">Wat eten we vandaag</div>
+      <div class="titel">Menu</div>
     </div>
     <div class="vandaag" id="vandaag"></div>
   </header>
