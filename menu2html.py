@@ -53,10 +53,17 @@ RUIS = re.compile(
     r"de maaltijden|de ingredi|pagina|\d+\s*$|bron|tel|e-?mail|www\.|"
     r"https?://)", re.I)
 
-# Cellen die alleen een allergenencode zijn: (1-9), (1,3,6,7), (11)
-ALLERGEEN = re.compile(r"^\(\s*\d[\da-z,\-\s]*\)?$", re.I)
+# Cellen die alleen een allergenencode zijn: (1-9), (1,3,6,7), (11), maar ook
+# zonder haakjes: 7, 1, 6,7. Die kale getallen mogen het weekblok niet
+# afsluiten zoals een paginanummer dat zou doen.
+ALLERGEEN = re.compile(
+    r"^\(?\s*\d{1,2}[a-i]?(?:\s*[,\-]\s*\d{1,2}[a-i]?)*\s*\)?$", re.I)
 # Dezelfde code achteraan een gerechtnaam: "Kalfsburger (1-6-7)"
 ALLERGEEN_ACHTER = re.compile(r"\s*\(\s*\d[\da-z,\-\s]*\)?\s*$", re.I)
+# Voetnoten en legende onder een weekblok: daarna hoort niets meer bij een dag.
+VOETNOOT = re.compile(
+    r"^([*#]|allergen|wijziging|voorbehoud|de maaltijden|de ingredi|bron|"
+    r"tel|e-?mail|www\.|https?://)", re.I)
 # Alleen in de kopregel van een weekblok: 31/08/2026
 RASTERDATUM = re.compile(r"^\s*(\d{1,2})/(\d{1,2})/(\d{4})\s*$")
 WEEKDAG_CEL = re.compile(r"^\s*(?:" + "|".join(WEEKDAGEN) + r")\s*$", re.I)
@@ -336,11 +343,14 @@ def parse_weekraster(paginas) -> list[dict]:
                 continue
             if all(WEEKDAG_CEL.match(t) for t, _, _ in cellen):
                 continue
+            # Een rij met alleen allergenencodes (ook kale getallen) overslaan.
+            if all(ALLERGEEN.match(t) for t, _, _ in cellen):
+                continue
 
             # De allergenenlegende en de voetnoten staan onderaan het blok en
             # lopen over de volle breedte. Alles daarna hoort bij geen enkele
             # dag meer, dus we sluiten het weekblok hier af.
-            if any(RUIS.match(t) for t, _, _ in cellen):
+            if any(VOETNOOT.match(t) for t, _, _ in cellen):
                 kolommen = []
                 continue
 
