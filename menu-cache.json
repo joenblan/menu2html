@@ -200,65 +200,109 @@
       "datum": "2026-09-28",
       "items": [
         "Preisoep",
-        "Kipdonut"
+        "Kipdonut",
+        "Rozemarijnjus",
+        "Andijvie",
+        "Boterboontjes",
+        "Gestoomde aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Falafel"
+      ]
     },
     {
       "datum": "2026-09-29",
       "items": [
         "Pastinaaksoep",
-        "Ham"
+        "Ham",
+        "Kaassaus",
+        "Bloemkool",
+        "Pasta"
       ],
-      "veggie": []
+      "veggie": [
+        "Provençaals stoofpotje met Gyros"
+      ]
     },
     {
       "datum": "2026-10-01",
       "items": [
         "Tomatensoep",
-        "Vol au vent"
+        "Vol au vent",
+        "Koolsla",
+        "Wortelen",
+        "Gebakken aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Vege vol au vent"
+      ]
     },
     {
       "datum": "2026-10-02",
       "items": [
         "Brunoise soep",
-        "Rundsburger"
+        "Rundsburger",
+        "Demi-glace saus",
+        "Broccoli in witte saus",
+        "Ratatouille",
+        "Aardappelpuree"
       ],
-      "veggie": []
+      "veggie": [
+        "Vege worst"
+      ]
     },
     {
       "datum": "2026-10-05",
       "items": [
         "Preisoep",
-        "Kalkoen cordon blue"
+        "Kalkoen cordon blue",
+        "Jus natuur",
+        "Groentemengeling/wittesaus",
+        "Gestoofde Erwten",
+        "Krielaardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Schnitzel"
+      ]
     },
     {
       "datum": "2026-10-06",
       "items": [
         "Groentensoep",
-        "Boomstammetje"
+        "Boomstammetje",
+        "Groene boontjes",
+        "Rode kool",
+        "Aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Quornfilet"
+      ]
     },
     {
       "datum": "2026-10-08",
       "items": [
         "Saint-Germainsoep",
-        "Balletjes"
+        "Balletjes",
+        "Tomatensaus",
+        "Gemengde sla",
+        "Appelmoes",
+        "Gestoomde aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Vege balletjes"
+      ]
     },
     {
       "datum": "2026-10-09",
       "items": [
         "Tomatensoep",
-        "Visnuggets"
+        "Visnuggets",
+        "Kruidenmayonaise",
+        "Bladspinazie",
+        "Pompoenpuree"
       ],
-      "veggie": []
+      "veggie": [
+        "Falafelburger"
+      ]
     },
     {
       "datum": "2026-10-12",
@@ -370,32 +414,53 @@
       "datum": "2026-10-26",
       "items": [
         "Kervelsoep",
-        "Kipnuggets"
+        "Kipnuggets",
+        "Zoet zure saus",
+        "Wokgroenten",
+        "Ananas",
+        "Rijst"
       ],
-      "veggie": []
+      "veggie": [
+        "Nuggets"
+      ]
     },
     {
       "datum": "2026-10-27",
       "items": [
         "Pompoensoep",
-        "Balletjes"
+        "Balletjes",
+        "Luiksesaus",
+        "Gestoofde wortelen met tijm",
+        "Gebakken champignons",
+        "Natuur aardappelen"
       ],
-      "veggie": []
+      "veggie": [
+        "Provençaals stoofpotje met quorn"
+      ]
     },
     {
       "datum": "2026-10-29",
       "items": [
         "Tomatensoep",
-        "Kipfilet"
+        "Kipfilet",
+        "Thijmsaus",
+        "Appelmoes",
+        "Aardappelpuree"
       ],
-      "veggie": []
+      "veggie": [
+        "Quorn filet"
+      ]
     },
     {
       "datum": "2026-10-30",
       "items": [
-        "Kippensoep"
+        "Kippensoep",
+        "Bolognaise",
+        "Lasagne"
       ],
-      "veggie": []
+      "veggie": [
+        "Vege lasagne"
+      ]
     }
   ]
 }
