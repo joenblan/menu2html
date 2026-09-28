@@ -22,6 +22,7 @@ import sys
 import statistics
 import unicodedata
 from pathlib import Path
+from urllib.parse import urljoin
 from zoneinfo import ZoneInfo
 
 import requests
@@ -75,11 +76,14 @@ def zoek_pdf_links(pagina_url: str = MENU_PAGINA) -> list[tuple[str, str]]:
 
     gevonden = []
     for a in soup.find_all("a", href=True):
-        href = a["href"]
-        if ".pdf" not in href.lower():
+        href = a["href"].strip()
+        tekst = a.get_text(" ", strip=True).lower()
+        # Niet elke downloadlink eindigt op .pdf: het cms geeft soms alleen
+        # /file/download/<id> mee. Een link met "menu" in de tekst telt ook.
+        if not (".pdf" in href.lower() or "/file/download/" in href.lower()
+                or ("menu" in tekst and "download" in href.lower())):
             continue
-        if href.startswith("/"):
-            href = BASIS + href
+        href = urljoin(pagina_url, href)
         label = " ".join(a.get_text(" ", strip=True).split())
         if not label:
             # De downloadknop heeft soms geen tekst; pak dan het label van de
@@ -97,22 +101,29 @@ def zoek_pdf_links(pagina_url: str = MENU_PAGINA) -> list[tuple[str, str]]:
     return uniek
 
 
-def kies_pdf(links: list[tuple[str, str]], vandaag: dt.date) -> tuple[str, str]:
-    """Kiest de pdf van deze maand. Staat die er niet, dan die van volgende
-    maand, want eind van de maand hangt de school de nieuwe alvast op."""
+def kies_pdfs(links: list[tuple[str, str]],
+              vandaag: dt.date) -> list[tuple[str, str]]:
+    """Kiest de pdf's van deze én volgende maand. De laatste schooldagen van
+    een maand staan vaak pas in het menu van de volgende maand (28-30
+    september zitten in 'Oktober'), en eind van de maand hangt de school de
+    nieuwe al op. Beide lezen en samenvoegen dekt dus het hele stuk."""
     if not links:
         raise SystemExit("Geen pdf gevonden op de maandmenupagina.")
 
     deze = MAAND_NAAM[vandaag.month]
     volgende = MAAND_NAAM[vandaag.month % 12 + 1]
+    gekozen = []
     for wens in (deze, volgende):
         for label, url in links:
             if wens in label.lower():
-                return label, url
+                gekozen.append((label, url))
+                break
 
+    if gekozen:
+        return gekozen
     print(f"!! geen maandnaam herkend in {[l for l, _ in links]}, "
           f"eerste genomen", file=sys.stderr)
-    return links[0]
+    return [links[0]]
 
 
 # --------------------------------------------------------------------------- #
@@ -627,55 +638,9 @@ setTimeout(() => location.reload(), HERLAAD_MS);
 # Main
 # --------------------------------------------------------------------------- #
 
-def main() -> int:
-    p = argparse.ArgumentParser()
-    p.add_argument("--pdf", help="lokale pdf i.p.v. downloaden")
-    p.add_argument("--dump", action="store_true",
-                   help="toon de ruwe tekst en tabellen uit de pdf en stop")
-    p.add_argument("--vandaag", help="ISO-datum, handig om te testen")
-    args = p.parse_args()
-
-    vandaag = (dt.date.fromisoformat(args.vandaag) if args.vandaag
-               else dt.datetime.now(TZ).date())
-
-    if args.pdf:
-        pad, bron = Path(args.pdf), Path(args.pdf).name
-    else:
-        links = zoek_pdf_links()
-        print(f"{len(links)} pdf-link(s) gevonden:")
-        for label, url in links:
-            print(f"  {label}  ->  {url}")
-        bron, url = kies_pdf(links, vandaag)
-        print(f"Gekozen: {bron}")
-        pad = ROOT / "maandmenu.pdf"
-        r = requests.get(url, timeout=TIMEOUT, headers={"User-Agent": USER_AGENT})
-        r.raise_for_status()
-        pad.write_bytes(r.content)
-        print(f"{len(r.content)} bytes gedownload")
-
+def lees_menu(pad: Path, jaar: int) -> tuple[list[dict], str]:
+    """Probeert de parsers na elkaar op één pdf; geeft (dagen, methode)."""
     tekst, tabellen = pdf_tekst_en_tabellen(pad)
-
-    if args.dump:
-        print("\n===== RUWE TEKST =====")
-        print(tekst)
-        print("\n===== ALS WEEKRASTER =====")
-        for dag in parse_weekraster(cellenrijen(pad)):
-            print(f"  {dag['datum']}: {' | '.join(dag['items'])}")
-            if dag["veggie"]:
-                print(f"       veggie: {' | '.join(dag['veggie'])}")
-        print("\n===== CELLEN OP WOORDPOSITIE =====")
-        for cellen in woordrijen(pad)[:40]:
-            print("  | " + " | ".join(cellen))
-        print(f"\n===== {len(tabellen)} TABEL(LEN) MET LIJNEN =====")
-        for n, tabel in enumerate(tabellen, 1):
-            print(f"--- tabel {n}: {len(tabel)} rijen ---")
-            for rij in tabel[:30]:
-                print("  | " + " | ".join(_schoon(c) for c in rij))
-        return 0
-
-    jaar = vandaag.year
-    if "januari" in bron.lower() and vandaag.month == 12:
-        jaar += 1
 
     # 1. Het weekraster van de cateraar: dagen als kolommen, gangen als rijen.
     dagen = parse_weekraster(cellenrijen(pad))
@@ -691,9 +656,80 @@ def main() -> int:
     if len(dagen) < 3:
         dagen = splits_veggie(parse_tekst(tekst, jaar))
         hoe = "tekstregels"
+    return dagen, hoe
 
-    print(f"{len(dagen)} dag(en) herkend via {hoe}")
-    for d in dagen[:8]:
+
+def dump(pad: Path) -> None:
+    tekst, tabellen = pdf_tekst_en_tabellen(pad)
+    print(f"\n##### {pad.name} #####")
+    print("\n===== RUWE TEKST =====")
+    print(tekst)
+    print("\n===== ALS WEEKRASTER =====")
+    for dag in parse_weekraster(cellenrijen(pad)):
+        print(f"  {dag['datum']}: {' | '.join(dag['items'])}")
+        if dag["veggie"]:
+            print(f"       veggie: {' | '.join(dag['veggie'])}")
+    print("\n===== CELLEN OP WOORDPOSITIE =====")
+    for cellen in woordrijen(pad)[:40]:
+        print("  | " + " | ".join(cellen))
+    print(f"\n===== {len(tabellen)} TABEL(LEN) MET LIJNEN =====")
+    for n, tabel in enumerate(tabellen, 1):
+        print(f"--- tabel {n}: {len(tabel)} rijen ---")
+        for rij in tabel[:30]:
+            print("  | " + " | ".join(_schoon(c) for c in rij))
+
+
+def main() -> int:
+    p = argparse.ArgumentParser()
+    p.add_argument("--pdf", nargs="+",
+                   help="een of meer lokale pdf's i.p.v. downloaden")
+    p.add_argument("--dump", action="store_true",
+                   help="toon de ruwe tekst en tabellen uit de pdf en stop")
+    p.add_argument("--vandaag", help="ISO-datum, handig om te testen")
+    args = p.parse_args()
+
+    vandaag = (dt.date.fromisoformat(args.vandaag) if args.vandaag
+               else dt.datetime.now(TZ).date())
+
+    bestanden: list[tuple[str, Path]] = []
+    if args.pdf:
+        bestanden = [(Path(x).name, Path(x)) for x in args.pdf]
+    else:
+        links = zoek_pdf_links()
+        print(f"{len(links)} pdf-link(s) gevonden:")
+        for label, url in links:
+            print(f"  {label}  ->  {url}")
+        for n, (label, url) in enumerate(kies_pdfs(links, vandaag)):
+            print(f"Gekozen: {label}")
+            pad = ROOT / ("maandmenu.pdf" if n == 0 else f"maandmenu-{n + 1}.pdf")
+            r = requests.get(url, timeout=TIMEOUT,
+                             headers={"User-Agent": USER_AGENT})
+            r.raise_for_status()
+            pad.write_bytes(r.content)
+            print(f"  {len(r.content)} bytes gedownload")
+            bestanden.append((label, pad))
+
+    if args.dump:
+        for _, pad in bestanden:
+            dump(pad)
+        return 0
+
+    # Alle pdf's samenvoegen per datum. Staat een dag in twee pdf's, dan wint
+    # de eerste (die van de lopende maand).
+    per_datum: dict[str, dict] = {}
+    for label, pad in bestanden:
+        jaar = vandaag.year
+        if "januari" in label.lower() and vandaag.month == 12:
+            jaar += 1
+        gevonden, hoe = lees_menu(pad, jaar)
+        print(f"{label}: {len(gevonden)} dag(en) herkend via {hoe}")
+        for d in gevonden:
+            per_datum.setdefault(d["datum"], d)
+    dagen = [per_datum[k] for k in sorted(per_datum)]
+    bron = " + ".join(label for label, _ in bestanden)
+
+    print(f"{len(dagen)} dag(en) in totaal:")
+    for d in dagen:
         print(f"  {d['datum']}: {' | '.join(d['items'])[:70]}")
 
     if len(dagen) < 3:
