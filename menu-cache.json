@@ -2,20 +2,6 @@
   "bron": "Maandmenu Oktober + Maandmenu November",
   "dagen": [
     {
-      "datum": "2023-11-30",
-      "items": [
-        "Courgettesoep",
-        "Kalkoen cordon blue",
-        "Pittige tomatensaus",
-        "Savooi in witte saus",
-        "Gebakken Spruitjes",
-        "Aardappelen"
-      ],
-      "veggie": [
-        "Nuggets"
-      ]
-    },
-    {
       "datum": "2026-09-28",
       "items": [
         "Preisoep",
@@ -438,6 +424,20 @@
       ],
       "veggie": [
         "Falafel"
+      ]
+    },
+    {
+      "datum": "2026-11-30",
+      "items": [
+        "Courgettesoep",
+        "Kalkoen cordon blue",
+        "Pittige tomatensaus",
+        "Savooi in witte saus",
+        "Gebakken Spruitjes",
+        "Aardappelen"
+      ],
+      "veggie": [
+        "Nuggets"
       ]
     },
     {
